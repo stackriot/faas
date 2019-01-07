@@ -29,6 +29,36 @@ func TestParameterEdge(t *testing.T) {
 	}
 }
 
+func TestScaling_1Min_4Max_Step1(t *testing.T) {
+	minReplicas := uint64(1)
+	maxReplicas := uint64(4)
+	scalingFactor := uint64(50)
+	current := uint64(1)
+
+	want := uint64(2)
+
+	newReplicas := CalculateReplicas("firing", current, maxReplicas, minReplicas, scalingFactor)
+	if newReplicas != want {
+		t.Logf("Replicas - want: %d, got: %d", want, newReplicas)
+		t.Fail()
+	}
+}
+
+func TestScaling_1Min_4Max_Step2(t *testing.T) {
+	minReplicas := uint64(1)
+	maxReplicas := uint64(4)
+	scalingFactor := uint64(50)
+	current := uint64(2)
+
+	want := uint64(4)
+
+	newReplicas := CalculateReplicas("firing", current, maxReplicas, minReplicas, scalingFactor)
+	if newReplicas != want {
+		t.Logf("Replicas - want: %d, got: %d", want, newReplicas)
+		t.Fail()
+	}
+}
+
 func TestScalingWithSameUpperLowerLimit(t *testing.T) {
 	minReplicas := uint64(1)
 	scalingFactor := uint64(20)
