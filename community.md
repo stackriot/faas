@@ -6,11 +6,11 @@ Welcome to the OpenFaaS community page where you can find:
 * [Function Providers/Back-ends](#openfaas-providers)
 * [Commercial adoption and end-users](https://github.com/openfaas/faas/blob/master/ADOPTERS.md)
 
-* Events
-    * [2017](#events-in-2017) [2018](#events-in-2018) [2019](#events-in-2019) [2020](#events-in-2020)
-
 * Blog posts and write-ups
-    * [2017](#blog-posts-and-write-ups-2017) [2018](#blog-posts-and-write-ups-2018) [2019](#blog-posts-and-write-ups-2019) [2020](#blog-posts-and-write-ups-2020)
+    * [2017](#blog-posts-and-write-ups-2017) [2018](#blog-posts-and-write-ups-2018) [2019](#blog-posts-and-write-ups-2019) [2020](#blog-posts-and-write-ups-2020) [2021](#blog-posts-and-write-ups-2021) [2022](#blog-posts-and-write-ups-2022)
+
+* Events
+    * [2017](#events-in-2017) [2018](#events-in-2018) [2019](#events-in-2019) [2021](#events-in-2021) [2022](#events-in-2022)
 
 * [Repositories - Projects, Samples, and Use Cases](#repositories)
 
@@ -51,6 +51,7 @@ It would be great to hear from you especially if you have any of the above and w
 
 | Title                                                               | Show       | Date        |
 |---------------------------------------------------------------------|--------------|----------|
+| [The Cube Interview - Monetising Open Source at KubeCon Valencia](https://www.youtube.com/watch?v=iyMIF4olLWI) | the Cube | 19-May-2022 |
 | ["Balancing OSS Sacrifice with Success"](https://github.com/readme/alex-ellis) | GitHub ReadME program | 04-Sep-2020 |
 | [Episode #116 Independent Open Source, with Alex Ellis](https://kubernetespodcast.com/episode/116-independent-open-source/) | Kubernetes Podcast by Google | 12-Aug-2020 |
 | [The explosive growth of CNCF, what is Kubernetes and independent open source](https://blog.newrelic.com/engineering/observy-mcobservface-episode-no-2-alex-ellis/) | Observy McObservface | 29-07-2020 |
@@ -70,8 +71,8 @@ It would be great to hear from you especially if you have any of the above and w
 
 | Title                                                              | Presenter       | Date      |
 | ------------------------------------------------------------------ | --------------- | --------- |
-| [Event driven Postgres with OpenFaaS](https://www.youtube.com/watch?v=nGOZLOjg5Zs) | Alex Ellis and Lucas Roesler | 02-Feb-2021 |
-| [Exploring Serverless use-cases with David McKay (Rawkode) and Alex Ellis](https://www.youtube.com/watch?v=mzuXVuccaqI) | David McKay (Rawkode) and Alex Ellis | 27-Jan-2021 |
+| [How and Why We Rebuilt Auto-scaling in OpenFaaS with Prometheus - Alex Ellis, KubeCon Valencia](https://www.youtube.com/watch?v=ka5QjX0JgFo) | Alex Ellis | 19-May-2022 |
+| [Your pocket-sized cloud with OpenFaaS and GitHub Actions](https://www.youtube.com/watch?v=HTgUCm9RedU) | Alex Ellis & Martin Woodword | 25-Mar-2022 |
 | [Meet faasd. Look Ma’ No Kubernetes! - Alex Ellis @ KubeCon](https://www.youtube.com/watch?v=ZnZJXI377ak&feature=youtu.be) | Alex Ellis | 8-Sep-2020 |
 | [Cloud Native Tools for Developers with Alex Ellis and Alistair Hey](https://youtu.be/r4mEF8rtXWo) | Alex Ellis and Alistair Hey | 13-Mar-2019 |
 | [Getting Beyond FaaS: The PLONK Stack for Kubernetes Developers](https://www.youtube.com/watch?v=NckMekZXRt8) | Alex Ellis | 21-Nov-2019 |
@@ -83,6 +84,73 @@ It would be great to hear from you especially if you have any of the above and w
 | [Digital Transformation of Vision Banco Paraguay with Serverless Functions @ KubeCon](https://kccna18.sched.com/event/GraO/digital-transformation-of-vision-banco-paraguay-with-serverless-functions-alex-ellis-vmware-patricio-diaz-vision-banco-saeca) | Alex Ellis & Patricio Diaz | 13-Dec-2018 |
 | [Introducing "faas" - Cool Hacks Keynote at Dockercon 2017](https://blog.docker.com/2017/04/dockercon-2017-mobys-cool-hack-sessions/) | Alex Ellis | 04-April-2017 |
 
+### 2023
+
+#### Blog posts, write-ups and videos 2023
+
+[Back to top](#openfaas-community)
+
+| Blog/video/repo name and description                                          | Author       | Site     | Date        |
+|-------------------------------------------------------------------------|--------------|----------|-------------|
+| [Building OpenFaaS Serverless function to detect weather using OpenWeatherMap and Python](https://www.faizanbashir.me/building-openfaas-serverless-function-to-detect-weather-using-openweathermap-and-python) | Faizan Bashir | faizanbashir.me | 02-Apr-2023 |
+| [Fine-tuning the cold-start in OpenFaaS ](https://www.openfaas.com/blog/fine-tuning-the-cold-start/) | Alex Ellis | openfaas.com | 28-Mar-2023 |
+| [How do changes to the Docker Hub affect OpenFaaS?](https://www.openfaas.com/blog/how-does-docker-hub-affect-openfaas/) | Alex Ellis | openfaas.com | 20-Mar-2023 |
+| [Cluster auto-scaling with DigitalOcean Kubernetes and OpenFaaS](https://www.openfaas.com/blog/cluster-autoscaling-with-digitalocean/) | Alex Ellis | openfaas.com | 16-Mar-2023 |
+| [Import leads from Google Forms into your CRM with functions](https://www.openfaas.com/blog/import-leads-from-google-forms-to-crm/) | Alex Ellis | openfaas.com | 02-Mar-2023 |
+| [Using OpenFaaS on AKS](https://learn.microsoft.com/en-us/azure/aks/openfaas) | Various | learn.microsoft.com | 27-Feb-2023 |
+| [How to integrate OpenFaaS functions with managed AWS services](https://www.openfaas.com/blog/integrate-openfaas-with-managed-aws-services/) | Han Verstraete | openfaas.com | 19-Jan-2023 |
+
+### 2022
+
+#### Blog posts, write-ups and videos 2022
+
+[Back to top](#openfaas-community)
+
+| Blog/video/repo name and description                                          | Author       | Site     | Date        |
+|-------------------------------------------------------------------------|--------------|----------|-------------|
+| [Trigger OpenFaaS functions from PostgreSQL with AWS Aurora](https://www.openfaas.com/blog/trigger-functions-from-postgres/) | Han Verstraete | openfaas.com | 16-Dec-2022 |
+| [Introducing our new Python template for production](https://www.openfaas.com/blog/openfaas-pro-python-template/) | Han Verstraete | openfaas.com | 06-Dec-2022 |
+| [Deploy Serverless Function on k3s/Kubernetes with OpenFaaS (x86/Arm, Linux VM, Go)](https://www.youtube.com/watch?v=-8MrDWg6K6s) | David Hwang | youtube.com | 09-Nov-2022 |
+| [Rethinking Auto-scaling for OpenFaaS](https://www.openfaas.com/blog/autoscaling-functions/) | Han Verstraete | openfaas.com | 05-Nov-2022 |
+| [Custom health and readiness checks for your OpenFaaS Functions](https://www.openfaas.com/blog/health-and-readiness-for-functions/) | Alex Ellis | openfaas.com | 26-Oct-2022 |
+| [Generate PDFs at scale on Kubernetes using OpenFaaS and Puppeteer](https://www.openfaas.com/blog/pdf-generation-at-scale-on-kubernetes/) | Han Verstraete | openfaas.com | 06-Oct-2022 |
+| [Eliminate vendor locking of Serverless workloads with OpenFaaS](https://awstip.com/eliminate-vendor-lock-in-of-serverless-workloads-with-openfaas-474807383ce1) | Meher Chaitanya | medium.com | 06-Oct-2022 |
+| [Use the Serverless Function Method to Build a Machine Learning Microservice System](https://blog.infuseai.io/use-serverless-function-method-to-build-a-ml-microservice-system-a108f3f2c1c) |  SimonLiu  | blog.infuseai.io | 30-Aug-2022 |
+| [Go Functions as a Service With Kubernetes and OpenFaaS](https://dominikbraun.io/blog/go-functions-as-a-service-with-kubernetes-and-openfaas/) |  Dominik Braun  | dominikbraun.io | 24-Aug-2022 |
+| [Exploring the Fan out and Fan in pattern with OpenFaaS](https://www.openfaas.com/blog/fan-out-and-back-in-using-functions/) | Han Verstraete | openfaas.com | 22-Aug-2022 |
+| [Finding Raspberry Pis with Raspberry Pis](https://www.openfaas.com/blog/searching-for-raspberrypi/) | Alex Ellis | openfaas.com | 08-Aug-2022 |
+| [The Next Generation of Queuing: JetStream for OpenFaaS](https://www.openfaas.com/blog/jetstream-for-openfaas/) | Han Verstraete | openfaas.com | 21-Jul-2022 |
+| [How to update your OpenFaaS functions automatically with the Argo CD Image Updater](https://www.openfaas.com/blog/argocd-image-updater-for-functions/) | Han Verstraete | openfaas.com | 04-Jul-2022 |
+| [How to build functions from source code with the Function Builder API](https://www.openfaas.com/blog/how-to-build-via-api/) | Han Verstraete | openfaas.com | 23-Jun-2022 |
+| [OpenFaaS First Function](https://rpi4cluster.com/k3s/k3s-openfaas-function/) | Vlado Portos | rpi4cluster.com | 22-Jun-2022 |
+| [OpenFaaS](https://rpi4cluster.com/k3s/k3s-openfaas/) | Vlado Portos | rpi4cluster.com | 22-Jun-2022 |
+| [How to package OpenFaaS functions with Helm](https://www.openfaas.com/blog/howto-package-functions-with-helm/) | Han Verstraete | openfaas.com | 09-Jun-2022 |
+| [The Event-Driven Edge with OpenFaaS](https://www.openfaas.com/blog/eventdriven-edge/) | Han Verstraete | openfaas.com | 01-Jun-2022 |
+| [Running faasd on Azure Arm-based Virtual Machines](https://blog.ediri.io/running-faasd-on-azure-arm-based-virtual-machines) | Engin Diri | blog.ediri.io | 27-May-2022 |
+| [WebAssembly functions in OpenFaaS using Sat (Part1)](https://www.wasm.builders/suborbital/webassembly-functions-in-openfaas-using-sat-part-1-2omk) | Connor Hicks | wasm.builders | 04-May-2022 |
+| [Building a RESTful API with functions](https://simonemms.com/blog/2022/04/24/building-a-restful-api-with-serverless-functions/) | Simon Emms | simonemms.com | 24-Apr-2022 |
+| [How to process your data the resilient way with back pressure](https://www.openfaas.com/blog/limits-and-backpressure/) | Alex Ellis | openfaas.com | 12-May-2022 |
+| [Open-Faas on Centos 7](https://medium.com/geekculture/open-faas-on-centos-7-c4dc629f28fe) | Heshani Samarasekara | medium.com | 07-May-2022 |
+| [A Deep Dive into Golang for OpenFaaS Functions](https://www.openfaas.com/blog/golang-deep-dive/) | Alex Ellis | openfaas.com | 13-Apr-2022 |
+| [Serverless Architecture with OpenFaaS and Java](https://www.xenonstack.com/blog/serverless-open-faas-java) | Navdeep Singh Gill | xenonstack.com | 13-Mar-2022 |
+| [My Journey Contributing To OpenFaaS So Far](https://www.openfaas.com/blog/my-journey-contributing-to-openfaas/) | Nitishkumar Singh | openfaas.com | 02-Mar-2022 |
+| [Your pocket-sized cloud with a Raspberry Pi](https://blog.alexellis.io/your-pocket-sized-cloud/) | Alex Ellis | openfaas.com | 23-Mar-2022 |
+| [Hosting a React App with OpenFaaS](https://www.openfaas.com/blog/react-app/) | Alex Ellis | openfaas.com | 01-Mar-2022 |
+| [Dude where's my coldstart?](https://www.openfaas.com/blog/what-serverless-coldstart/) | Alex Ellis | openfaas.com | 19-Jan-2022 |
+| [OpenFaaS Highlights from 2021](https://www.openfaas.com/blog/highlights-2021/) | Alex Ellis | openfaas.com | 04-Jan-2022 |
+| [OpenFaaS and HashiCorp Vault](https://johansiebens.dev/posts/2022/01/openfaas-and-hashicorp-vault/) | Johan Siebens | johansiebens.dev | 21-Jan-2022 |
+
+### Events in 2022
+
+Mainly virtual due to pandemic.
+
+[Back to top](#openfaas-community)
+
+| Event name and description                                          | Speaker      | Location | Date        |
+|---------------------------------------------------------------------|--------------|----------|-------------|
+| [How and Why We Rebuilt Auto-scaling in OpenFaaS with Prometheus - Alex Ellis, KubeCon Valencia](https://www.youtube.com/watch?v=ka5QjX0JgFo)  | Alex Ellis | Valencia, Spain | 19-May-2022 |
+| [Your pocket-sized cloud with OpenFaaS and GitHub Actions](https://www.youtube.com/watch?v=HTgUCm9RedU) | Alex Ellis & Martin Woodword | YouTube | 25-Mar-2022 |
+
 ### 2021
 
 #### Blog posts and write-ups 2021
@@ -91,13 +159,21 @@ It would be great to hear from you especially if you have any of the above and w
 
 | Blog/repo name and description                                          | Author       | Site     | Date        |
 |-------------------------------------------------------------------------|--------------|----------|-------------|
+| [Configure your OpenFaaS functions for staging and production](https://www.openfaas.com/blog/custom-environments/) | Alex Ellis | openfaas.com | 09-Dec-2021 |
+| [OpenFaaS - Run Containerized Functions On Your Own Terms](https://iximiuz.com/en/posts/openfaas-case-study/) | Ivan Velichko | iximiuz.com | 02-Dec-2021 |
+| [Making a Docker Dev Environment for OpenFaaS](https://www.felipecruz.es/making-a-docker-dev-environment-for-openfaas/) | Felipe Cruz | felipecruz.es | 30-Nov-2021 |
+| [Build at the Edge with OpenFaaS and GitHub Actions](https://www.openfaas.com/blog/edge-actions/) | Alex Ellis | openfaas.com | 29-Nov-2021 |
+| [Improving long-running jobs for OpenFaaS users](https://www.openfaas.com/blog/long-running-jobs/) | Alex Ellis | openfaas.com | 05-Nov-2021 |
+| [Derek says goodbye to Docker Swarm](https://www.openfaas.com/blog/migrating-derek-from-docker-swarm/) | Alex Ellis | openfaas.com | 05-Oct-2021 |
+| [Case-study: Building a Low Code automation platform with OpenFaaS](https://www.openfaas.com/blog/low-code-automation/) | Veselin Pizurica | openfaas.com | 05-Oct-2021 |
 | [OpenFaaS on RHOCP 4.x – Part 1](https://community.ibm.com/community/user/publiccloud/blogs/alexei-karve/2021/07/06/openfaas-on-rhocp-1) | Alexei Karve | community.ibm.com | 06-July-2021 |
 | [Kubernetes in Docker (KinD) で OpenFaaS を動かす！](https://yoh1496.hatenablog.com/entry/2021/05/17/182207) | ishiguro-yo | yoh1496.hatenablog.com | 17-May-2021 |
 | [Secure Serverless with OpenFaaS](https://dev.to/mikeyglitz/secure-serverless-with-openfaas-509b) | Michael Glitzos | medium.com | 14-May-2021 |
 | [Learn how Istio can provide a service mesh for your functions](https://www.openfaas.com/blog/istio-functions/) | Alex Ellis | openfaas.com | 12-May-2021 |
 | [Functions for data science with R templates for OpenFaaS](https://www.openfaas.com/blog/r-templates/) | Peter Solymos | openfaas.com | 12-May-2021 |
 | [Learn how to build functions faster using Rancher's kim and K3s](https://www.openfaas.com/blog/kim/) | Alex Ellis | openfaas.com | 12-May-2021 |
-| [OpenFaas mit faasd installieren](https://blog.micro-saas.de/open-faas-mit-faasd-installieren/) | Björn Renzel| blog.micro-saas.de | 24-Apr-2021
+| [OpenFaas mit faasd installieren](https://blog.micro-saas.de/open-faas-mit-faasd-installieren/) | Björn Renzel| blog.micro-saas.de | 24-
+-2021
 | [Bring GitOps to your OpenFaaS functions with ArgoCD](https://www.openfaas.com/blog/bring-gitops-to-your-openfaas-functions-with-argocd/) | Batuhan Apaydın | openfaas.com | 15-Apr-2021 |
 | [OpenFaaS and GKE Autopilot](https://johansiebens.dev/posts/2021/03/openfaas-and-gke-autopilot/) | Johan Siebens | johansiebens.dev | 16-Mar-2021 |
 | [Exploring Serverless Use-cases from Companies and the Community](https://www.openfaas.com/blog/exploring-serverless-live/) | Alex Ellis | openfaas.com | 19-Feb-2021 |
@@ -107,6 +183,19 @@ It would be great to hear from you especially if you have any of the above and w
 | [How to integrate with GitHub the right way with GitHub Apps](https://www.openfaas.com/blog/integrate-with-github-apps-and-faasd/) | Batuhan Apaydın | openfaas.com | 26-Jan-2021 |
 | [Serverless with OpenFaaS and .NET](https://goncalo-a-oliveira.medium.com/serverless-with-openfaas-and-net-6a66b5c30a5f) | Batuhan Apaydın | medium.com | 20-Jan-2021 |
 | [How I discovered faas and what it changed for me](https://releasecandidate.dev/posts/2021/discovery-faasd-and-openfaas/) | Peter Thaleikis | releasecandidate.dev | 05-Jan-2021 |
+| [Installing OpenFaaS On k3s (Single Node)](https://midnightprogrammer.net/post/installing-openfaas-on-k3s-single-node/) | Pashant Khandelwal  | midnightprogrammer.net | 04-Jan-2021 |
+
+#### Events in 2021
+
+Mainly virtual due to pandemic.
+
+[Back to top](#openfaas-community)
+
+| Event name and description                                          | Speaker      | Location | Date        |
+|---------------------------------------------------------------------|--------------|----------|-------------|
+| [GopherCon UK 2021: Alex Ellis - Zero to OpenFaas in 60 months](https://www.youtube.com/watch?v=QzwBmHkP-rQ) | Alex Ellis | London, UK | 22 Nov 2021 |
+| [Event driven Postgres with OpenFaaS](https://www.youtube.com/watch?v=nGOZLOjg5Zs) | Alex Ellis and Lucas Roesler | YouTube | 02-Feb-2021 |
+| [Exploring Serverless use-cases with David McKay (Rawkode) and Alex Ellis](https://www.youtube.com/watch?v=mzuXVuccaqI) | YouTube | David McKay (Rawkode) and Alex Ellis | 27-Jan-2021 |
 
 ### 2020
 
@@ -205,6 +294,7 @@ Postponed events for 2020
 | [Applying GitOps to OpenFaaS with Flux Helm Operator](https://www.openfaas.com/blog/openfaas-flux/) | Stefan Prodan | openfaas.com| 16-Jan-2020|
 | [OpenFaaS 3rd Birthday Celebrations](https://www.openfaas.com/blog/birthday-teamserverless/) | Alex Ellis | openfaas.com| 14-Jan-2020|
 | [How To Get Started Contributing to OpenFaaS](https://blog.heyal.co.uk/developing-openfaas/)| Alistair Hey | blog.heyal.co.uk| 04-Jan-2020 |
+
 ### 2019
 
 #### Events in 2019

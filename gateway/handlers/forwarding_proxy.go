@@ -1,49 +1,33 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) OpenFaaS Author(s). All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package handlers
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
-	"regexp"
 	"strings"
+	"sync"
 	"time"
 
+	fhttputil "github.com/openfaas/faas-provider/httputil"
 	"github.com/openfaas/faas/gateway/pkg/middleware"
 	"github.com/openfaas/faas/gateway/types"
 )
 
-// functionMatcher parses out the service name (group 1) and rest of path (group 2).
-var functionMatcher = regexp.MustCompile("^/?(?:async-)?function/([^/?]+)([^?]*)")
-
-// Indices and meta-data for functionMatcher regex parts
-const (
-	hasPathCount = 3
-	routeIndex   = 0 // routeIndex corresponds to /function/ or /async-function/
-	nameIndex    = 1 // nameIndex is the function name
-	pathIndex    = 2 // pathIndex is the path i.e. /employee/:id/
-)
-
-// BaseURLResolver URL resolver for upstream requests
-type BaseURLResolver interface {
-	Resolve(r *http.Request) string
-}
-
-// URLPathTransformer Transform the incoming URL path for upstream requests
-type URLPathTransformer interface {
-	Transform(r *http.Request) string
-}
-
 // MakeForwardingProxyHandler create a handler which forwards HTTP requests
 func MakeForwardingProxyHandler(proxy *types.HTTPClientReverseProxy,
 	notifiers []HTTPNotifier,
-	baseURLResolver BaseURLResolver,
-	urlPathTransformer URLPathTransformer,
+	baseURLResolver middleware.BaseURLResolver,
+	urlPathTransformer middleware.URLPathTransformer,
 	serviceAuthInjector middleware.AuthInjector) http.HandlerFunc {
 
 	writeRequestURI := false
@@ -51,7 +35,10 @@ func MakeForwardingProxyHandler(proxy *types.HTTPClientReverseProxy,
 		writeRequestURI = exists
 	}
 
+	reverseProxy := makeRewriteProxy(baseURLResolver, urlPathTransformer)
+
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		baseURL := baseURLResolver.Resolve(r)
 		originalURL := r.URL.String()
 		requestURL := urlPathTransformer.Transform(r)
@@ -62,12 +49,12 @@ func MakeForwardingProxyHandler(proxy *types.HTTPClientReverseProxy,
 
 		start := time.Now()
 
-		statusCode, err := forwardRequest(w, r, proxy.Client, baseURL, requestURL, proxy.Timeout, writeRequestURI, serviceAuthInjector)
-
-		seconds := time.Since(start)
+		statusCode, err := forwardRequest(w, r, proxy.Client, baseURL, requestURL, proxy.Timeout, writeRequestURI, serviceAuthInjector, reverseProxy)
 		if err != nil {
 			log.Printf("error with upstream request to: %s, %s\n", requestURL, err.Error())
 		}
+
+		seconds := time.Since(start)
 
 		for _, notifier := range notifiers {
 			notifier.Notify(r.Method, requestURL, originalURL, statusCode, "completed", seconds)
@@ -109,12 +96,14 @@ func forwardRequest(w http.ResponseWriter,
 	requestURL string,
 	timeout time.Duration,
 	writeRequestURI bool,
-	serviceAuthInjector middleware.AuthInjector) (int, error) {
+	serviceAuthInjector middleware.AuthInjector,
+	reverseProxy *httputil.ReverseProxy) (int, error) {
+
+	if r.Body != nil {
+		defer r.Body.Close()
+	}
 
 	upstreamReq := buildUpstreamRequest(r, baseURL, requestURL)
-	if upstreamReq.Body != nil {
-		defer upstreamReq.Body.Close()
-	}
 
 	if serviceAuthInjector != nil {
 		serviceAuthInjector.Inject(upstreamReq)
@@ -124,14 +113,19 @@ func forwardRequest(w http.ResponseWriter,
 		log.Printf("forwardRequest: %s %s\n", upstreamReq.Host, upstreamReq.URL.String())
 	}
 
+	if strings.HasPrefix(r.Header.Get("Accept"), "text/event-stream") {
+
+		return handleEventStream(w, r, reverseProxy, upstreamReq, timeout)
+	}
+
 	ctx, cancel := context.WithTimeout(r.Context(), timeout)
 	defer cancel()
 
-	res, resErr := proxyClient.Do(upstreamReq.WithContext(ctx))
-	if resErr != nil {
+	res, err := proxyClient.Do(upstreamReq.WithContext(ctx))
+	if err != nil {
 		badStatus := http.StatusBadGateway
 		w.WriteHeader(badStatus)
-		return badStatus, resErr
+		return badStatus, err
 	}
 
 	if res.Body != nil {
@@ -140,15 +134,43 @@ func forwardRequest(w http.ResponseWriter,
 
 	copyHeaders(w.Header(), &res.Header)
 
-	// Write status code
 	w.WriteHeader(res.StatusCode)
 
 	if res.Body != nil {
-		// Copy the body over
-		io.CopyBuffer(w, res.Body, nil)
+		io.Copy(w, res.Body)
 	}
 
 	return res.StatusCode, nil
+}
+
+func handleEventStream(w http.ResponseWriter, r *http.Request, reverseProxy *httputil.ReverseProxy, upstreamReq *http.Request, timeout time.Duration) (int, error) {
+	ww := fhttputil.NewHttpWriteInterceptor(w)
+
+	ctx, cancel := context.WithTimeoutCause(r.Context(), timeout, http.ErrHandlerTimeout)
+	defer cancel()
+
+	r = r.WithContext(ctx)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer func() {
+			wg.Done()
+			if r := recover(); r != nil {
+				if errors.Is(r.(error), http.ErrAbortHandler) {
+					log.Printf("Aborted [%s] for: %s", upstreamReq.Method, upstreamReq.URL.Path)
+
+				} else {
+					log.Printf("Recovered from panic in reverseproxy: %v", r)
+				}
+			}
+		}()
+
+		reverseProxy.ServeHTTP(ww, r)
+	}()
+
+	wg.Wait()
+
+	return ww.Status(), nil
 }
 
 func copyHeaders(destination http.Header, source *http.Header) {
@@ -163,80 +185,6 @@ func deleteHeaders(target *http.Header, exclude *[]string) {
 	for _, h := range *exclude {
 		target.Del(h)
 	}
-}
-
-// SingleHostBaseURLResolver resolves URLs against a single BaseURL
-type SingleHostBaseURLResolver struct {
-	BaseURL string
-}
-
-// Resolve the base URL for a request
-func (s SingleHostBaseURLResolver) Resolve(r *http.Request) string {
-
-	baseURL := s.BaseURL
-
-	if strings.HasSuffix(baseURL, "/") {
-		baseURL = baseURL[0 : len(baseURL)-1]
-	}
-	return baseURL
-}
-
-// FunctionAsHostBaseURLResolver resolves URLs using a function from the URL as a host
-type FunctionAsHostBaseURLResolver struct {
-	FunctionSuffix    string
-	FunctionNamespace string
-}
-
-// Resolve the base URL for a request
-func (f FunctionAsHostBaseURLResolver) Resolve(r *http.Request) string {
-	svcName := getServiceName(r.URL.Path)
-
-	const watchdogPort = 8080
-	var suffix string
-
-	if len(f.FunctionSuffix) > 0 {
-		if index := strings.LastIndex(svcName, "."); index > -1 && len(svcName) > index+1 {
-			suffix = strings.Replace(f.FunctionSuffix, f.FunctionNamespace, "", -1)
-		} else {
-			suffix = "." + f.FunctionSuffix
-		}
-	}
-
-	return fmt.Sprintf("http://%s%s:%d", svcName, suffix, watchdogPort)
-}
-
-// TransparentURLPathTransformer passes the requested URL path through untouched.
-type TransparentURLPathTransformer struct {
-}
-
-// Transform returns the URL path unchanged.
-func (f TransparentURLPathTransformer) Transform(r *http.Request) string {
-	return r.URL.Path
-}
-
-// FunctionPrefixTrimmingURLPathTransformer removes the "/function/servicename/" prefix from the URL path.
-type FunctionPrefixTrimmingURLPathTransformer struct {
-}
-
-// Transform removes the "/function/servicename/" prefix from the URL path.
-func (f FunctionPrefixTrimmingURLPathTransformer) Transform(r *http.Request) string {
-	ret := r.URL.Path
-
-	if ret != "" {
-		// When forwarding to a function, since the `/function/xyz` portion
-		// of a path like `/function/xyz/rest/of/path` is only used or needed
-		// by the Gateway, we want to trim it down to `/rest/of/path` for the
-		// upstream request.  In the following regex, in the case of a match
-		// the r.URL.Path will be at `0`, the function name at `1` and the
-		// rest of the path (the part we are interested in) at `2`.
-		matcher := functionMatcher.Copy()
-		parts := matcher.FindStringSubmatch(ret)
-		if len(parts) == hasPathCount {
-			ret = parts[pathIndex]
-		}
-	}
-
-	return ret
 }
 
 // Hop-by-hop headers. These are removed when sent to the backend.
@@ -255,4 +203,25 @@ var hopHeaders = []string{
 	"Trailer", // not Trailers per URL above; https://www.rfc-editor.org/errata_search.php?eid=4522
 	"Transfer-Encoding",
 	"Upgrade",
+}
+
+func makeRewriteProxy(baseURLResolver middleware.BaseURLResolver, urlPathTransformer middleware.URLPathTransformer) *httputil.ReverseProxy {
+
+	return &httputil.ReverseProxy{
+
+		ErrorLog: log.New(io.Discard, "proxy:", 0),
+		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
+		},
+		Director: func(r *http.Request) {
+
+			baseURL := baseURLResolver.Resolve(r)
+			baseURLu, _ := r.URL.Parse(baseURL)
+
+			requestURL := urlPathTransformer.Transform(r)
+
+			r.URL.Scheme = "http"
+			r.URL.Path = requestURL
+			r.URL.Host = baseURLu.Host
+		},
+	}
 }

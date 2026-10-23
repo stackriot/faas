@@ -21,6 +21,9 @@ _testmain.go
 
 *.exe
 
+# Git backup files
+*.orig
+
 # Emacs
 *~
 \#*\#
@@ -40,3 +43,13 @@ _testmain.go
 
 # Goland
 .idea
+
+# VS Code
+.vscode
+
+# Claude Code
+.claude/
+CLAUDE.local.md
+
+# Git worktrees
+.worktrees/

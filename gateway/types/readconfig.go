@@ -1,5 +1,7 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) Alex Ellis 2017. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package types
 
@@ -8,7 +10,6 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -59,7 +60,7 @@ func (ReadConfig) Read(hasEnv HasEnv) (*GatewayConfig, error) {
 		PrometheusPort: 9090,
 	}
 
-	defaultDuration := time.Second * 8
+	defaultDuration := time.Second * 60
 
 	cfg.ReadTimeout = parseIntOrDurationValue(hasEnv.Getenv("read_timeout"), defaultDuration)
 	cfg.WriteTimeout = parseIntOrDurationValue(hasEnv.Getenv("write_timeout"), defaultDuration)
@@ -129,9 +130,6 @@ func (ReadConfig) Read(hasEnv HasEnv) (*GatewayConfig, error) {
 		cfg.PrometheusHost = prometheusHost
 	}
 
-	cfg.DirectFunctions = parseBoolValue(hasEnv.Getenv("direct_functions"))
-	cfg.DirectFunctionsSuffix = hasEnv.Getenv("direct_functions_suffix")
-
 	cfg.UseBasicAuth = parseBoolValue(hasEnv.Getenv("basic_auth"))
 
 	secretPath := hasEnv.Getenv("secret_mount_path")
@@ -168,12 +166,6 @@ func (ReadConfig) Read(hasEnv HasEnv) (*GatewayConfig, error) {
 	cfg.AuthProxyPassBody = parseBoolValue(hasEnv.Getenv("auth_proxy_pass_body"))
 
 	cfg.Namespace = hasEnv.Getenv("function_namespace")
-
-	if len(cfg.DirectFunctionsSuffix) > 0 && len(cfg.Namespace) > 0 {
-		if strings.HasPrefix(cfg.DirectFunctionsSuffix, cfg.Namespace) == false {
-			return nil, fmt.Errorf("function_namespace must be a sub-string of direct_functions_suffix")
-		}
-	}
 
 	return &cfg, nil
 }
@@ -213,12 +205,6 @@ type GatewayConfig struct {
 
 	// Port to connect to Prometheus.
 	PrometheusPort int
-
-	// If set to true we will access upstream functions directly rather than through the upstream provider
-	DirectFunctions bool
-
-	// If set this will be used to resolve functions directly
-	DirectFunctionsSuffix string
 
 	// If set, reads secrets from file-system for enabling basic auth.
 	UseBasicAuth bool

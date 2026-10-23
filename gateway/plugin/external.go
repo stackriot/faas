@@ -1,5 +1,7 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) Alex Ellis 2017. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package plugin
 
@@ -7,7 +9,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -25,6 +27,9 @@ type ExternalServiceQuery struct {
 	URL          url.URL
 	ProxyClient  http.Client
 	AuthInjector middleware.AuthInjector
+
+	// IncludeUsage includes usage metrics in the response
+	IncludeUsage bool
 }
 
 // NewExternalServiceQuery proxies service queries to external plugin via HTTP
@@ -49,6 +54,7 @@ func NewExternalServiceQuery(externalURL url.URL, authInjector middleware.AuthIn
 		URL:          externalURL,
 		ProxyClient:  proxyClient,
 		AuthInjector: authInjector,
+		IncludeUsage: false,
 	}
 }
 
@@ -61,7 +67,11 @@ func (s ExternalServiceQuery) GetReplicas(serviceName, serviceNamespace string) 
 
 	function := types.FunctionStatus{}
 
-	urlPath := fmt.Sprintf("%ssystem/function/%s?namespace=%s", s.URL.String(), serviceName, serviceNamespace)
+	urlPath := fmt.Sprintf("%ssystem/function/%s?namespace=%s&usage=%v",
+		s.URL.String(),
+		serviceName,
+		serviceNamespace,
+		s.IncludeUsage)
 
 	req, err := http.NewRequest(http.MethodGet, urlPath, nil)
 	if err != nil {
@@ -75,24 +85,27 @@ func (s ExternalServiceQuery) GetReplicas(serviceName, serviceNamespace string) 
 	res, err := s.ProxyClient.Do(req)
 	if err != nil {
 		log.Println(urlPath, err)
+		return emptyServiceQueryResponse, err
+
+	}
+
+	var bytesOut []byte
+	if res.Body != nil {
+		bytesOut, _ = io.ReadAll(res.Body)
+		defer res.Body.Close()
+	}
+
+	if res.StatusCode == http.StatusOK {
+		if err := json.Unmarshal(bytesOut, &function); err != nil {
+			log.Printf("Unable to unmarshal: %q, %s", string(bytesOut), err)
+			return emptyServiceQueryResponse, err
+		}
+
+		// log.Printf("GetReplicas [%s.%s] took: %fs", serviceName, serviceNamespace, time.Since(start).Seconds())
+
 	} else {
-
-		if res.Body != nil {
-			defer res.Body.Close()
-		}
-
-		if res.StatusCode == http.StatusOK {
-			bytesOut, _ := ioutil.ReadAll(res.Body)
-			err = json.Unmarshal(bytesOut, &function)
-			if err != nil {
-				log.Println(urlPath, err)
-			}
-			log.Printf("GetReplicas [%s.%s] took: %fs", serviceName, serviceNamespace, time.Since(start).Seconds())
-
-		} else {
-			log.Printf("GetReplicas [%s.%s] took: %fs, code: %d\n", serviceName, serviceNamespace, time.Since(start).Seconds(), res.StatusCode)
-			return emptyServiceQueryResponse, fmt.Errorf("server returned non-200 status code (%d) for function, %s", res.StatusCode, serviceName)
-		}
+		log.Printf("GetReplicas [%s.%s] took: %.4fs, code: %d\n", serviceName, serviceNamespace, time.Since(start).Seconds(), res.StatusCode)
+		return emptyServiceQueryResponse, fmt.Errorf("server returned non-200 status code (%d) for function, %s, body: %s", res.StatusCode, serviceName, string(bytesOut))
 	}
 
 	minReplicas := uint64(scaling.DefaultMinReplicas)
@@ -107,13 +120,12 @@ func (s ExternalServiceQuery) GetReplicas(serviceName, serviceNamespace string) 
 		maxReplicas = extractLabelValue(labels[scaling.MaxScaleLabel], maxReplicas)
 		extractedScalingFactor := extractLabelValue(labels[scaling.ScalingFactorLabel], scalingFactor)
 
-		if extractedScalingFactor >= 0 && extractedScalingFactor <= 100 {
+		if extractedScalingFactor > 0 && extractedScalingFactor <= 100 {
 			scalingFactor = extractedScalingFactor
 		} else {
-			log.Printf("Bad Scaling Factor: %d, is not in range of [0 - 100]. Will fallback to %d", extractedScalingFactor, scalingFactor)
+			return scaling.ServiceQueryResponse{}, fmt.Errorf("bad scaling factor: %d, is not in range of [0 - 100]", extractedScalingFactor)
 		}
 	}
-	log.Printf("GetReplicas [%s.%s] took: %fs", serviceName, serviceNamespace, time.Since(start).Seconds())
 
 	return scaling.ServiceQueryResponse{
 		Replicas:          function.Replicas,
@@ -162,7 +174,8 @@ func (s ExternalServiceQuery) SetReplicas(serviceName, serviceNamespace string, 
 		err = fmt.Errorf("error scaling HTTP code %d, %s", res.StatusCode, urlPath)
 	}
 
-	log.Printf("SetReplicas [%s.%s] took: %fs", serviceName, serviceNamespace, time.Since(start).Seconds())
+	log.Printf("SetReplicas [%s.%s] took: %.4fs",
+		serviceName, serviceNamespace, time.Since(start).Seconds())
 
 	return err
 }

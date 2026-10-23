@@ -1,11 +1,13 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) Alex Ellis 2017. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package handlers
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -14,24 +16,24 @@ import (
 	"github.com/gorilla/mux"
 	ftypes "github.com/openfaas/faas-provider/types"
 	"github.com/openfaas/faas/gateway/metrics"
+	"github.com/openfaas/faas/gateway/pkg/middleware"
 
 	"github.com/openfaas/faas/gateway/scaling"
 )
 
-const queueAnnotation = "com.openfaas.queue"
-
 // MakeQueuedProxy accepts work onto a queue
-func MakeQueuedProxy(metrics metrics.MetricOptions, queuer ftypes.RequestQueuer, pathTransformer URLPathTransformer, defaultNS string, functionQuery scaling.FunctionQuery) http.HandlerFunc {
+func MakeQueuedProxy(metrics metrics.MetricOptions, queuer ftypes.RequestQueuer, pathTransformer middleware.URLPathTransformer, defaultNS string, functionQuery scaling.FunctionQuery) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var body []byte
 		if r.Body != nil {
 			defer r.Body.Close()
-		}
 
-		body, err := ioutil.ReadAll(r.Body)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
+			var err error
+			body, err = io.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 		}
 
 		callbackURL, err := getCallbackURLHeader(r.Header)
@@ -43,12 +45,6 @@ func MakeQueuedProxy(metrics metrics.MetricOptions, queuer ftypes.RequestQueuer,
 		vars := mux.Vars(r)
 		name := vars["name"]
 
-		queueName, err := getQueueName(name, functionQuery)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		req := &ftypes.QueueRequest{
 			Function:    name,
 			Body:        body,
@@ -58,16 +54,12 @@ func MakeQueuedProxy(metrics metrics.MetricOptions, queuer ftypes.RequestQueuer,
 			Header:      r.Header,
 			Host:        r.Host,
 			CallbackURL: callbackURL,
-			QueueName:   queueName,
-		}
-
-		if len(queueName) > 0 {
-			log.Printf("Queueing %s to: %s\n", name, queueName)
 		}
 
 		if err = queuer.Queue(req); err != nil {
-			fmt.Printf("Queue error: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error queuing request: %v", err)
+			http.Error(w, fmt.Sprintf("Error queuing request: %s", err.Error()),
+				http.StatusInternalServerError)
 			return
 		}
 
@@ -89,21 +81,6 @@ func getCallbackURLHeader(header http.Header) (*url.URL, error) {
 	}
 
 	return callbackURL, nil
-}
-
-func getQueueName(name string, fnQuery scaling.FunctionQuery) (queueName string, err error) {
-	fn, ns := getNameParts(name)
-
-	annotations, err := fnQuery.GetAnnotations(fn, ns)
-	if err != nil {
-		return "", err
-	}
-	queueName = ""
-	if v := annotations[queueAnnotation]; len(v) > 0 {
-		queueName = v
-	}
-
-	return queueName, err
 }
 
 func getNameParts(name string) (fn, ns string) {

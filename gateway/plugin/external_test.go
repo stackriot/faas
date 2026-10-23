@@ -89,7 +89,7 @@ func TestGetReplicasExistentFn(t *testing.T) {
 		t.Fail()
 	}
 	if svcQryResp != expectedSvcQryResp {
-		t.Logf("Unexpected return values - wanted %+v, got: %+v ", expectedSvcQryResp, svcQryResp)
+		t.Logf("Unexpected return values - wanted\n%+v\ngot\n%+v ", expectedSvcQryResp, svcQryResp)
 		t.Fail()
 	}
 }

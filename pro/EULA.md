@@ -1,8 +1,10 @@
 End User License Agreement (EULA)
 
-1. Licensed software. OpenFaaS PRO is licensed as commercial software and must not be used without a valid license key from OpenFaaS Ltd.
+1. Licensed software. OpenFaaS Pro is licensed as commercial software and must not be used without a valid license key from OpenFaaS Ltd.
 
-1.1 OpenFaaS Ltd. ("Supplier") is a registered company in England & Wales with number: 11076587, registered address: Peterborough UK.
+1.2 There are two variants of OpenFaaS Pro, OpenFaaS Standard and OpenFaaS for Enterprises. The term OpenFaaS Pro may be used to refer to either of these variants.
+
+1.3 OpenFaaS Ltd. ("Supplier") is a registered company in England & Wales with number: 11076587, registered address: Peterborough UK.
 
 2. Your agreement. By accessing, executing, or otherwise using the Licensed Software, you ("Customer") acknowledge that you have read this Agreement, understand it, and agree to be bound by its terms and conditions. If you are not willing to be bound by the terms of this Agreement, do not access or use the Licensed Software.
 
@@ -14,7 +16,7 @@ End User License Agreement (EULA)
 
 3. Free Trial
 
-If you either register on the OpenFaaS PRO web site for a free trial or otherwise order a free trial version, OpenFaaS Ltd will make certain Licensed Software available to you on a trial basis (the “Trial Version”) free of charge until the end of the free trial period for which you registered or ordered the applicable Licensed Software. The Trial Version may be used only to review, demonstrate and evaluate the Licensed Software and may have limited features. The Trial Version may cease operating after the applicable time period or number of uses based on an internal metering mechanism within the Trial Version itself. Regardless of any such metering, you must stop use at the end of such period or number of uses. Additional trial terms and conditions may appear on the trial registration web page or Order Form. Any such additional terms and conditions are incorporated into this Agreement by reference and are legally binding.
+If you either register on the OpenFaaS Pro web site for a free trial or otherwise order a free trial version, OpenFaaS Ltd will make certain Licensed Software available to you on a trial basis (the “Trial Version”) free of charge until the end of the free trial period for which you registered or ordered the applicable Licensed Software. The Trial Version may be used only to review, demonstrate and evaluate the Licensed Software and may have limited features. The Trial Version may cease operating after the applicable time period or number of uses based on an internal metering mechanism within the Trial Version itself. Regardless of any such metering, you must stop use at the end of such period or number of uses. Additional trial terms and conditions may appear on the trial registration web page or Order Form. Any such additional terms and conditions are incorporated into this Agreement by reference and are legally binding.
 
 4. Grant of License; Ownership.
 
@@ -32,16 +34,57 @@ If you either register on the OpenFaaS PRO web site for a free trial or otherwis
 
 4.5 Feedback. Customer may provide feedback to OpenFaaS Ltd about the Products (e.g. technical support input, suggestions, or enhancement requests). OpenFaaS Ltd may develop, modify, and improve the Products based on Customer’s Feedback without obligation to Customer, and Customer irrevocably assigns to OpenFaaS Ltd all right, title, and interest in that Feedback.
 
-5. Termination and ongoing effectiveness
+4.6 Transition to Standard Requires Prior Written Approval; Historical Custom Terms. OpenFaaS Standard is a separate commercial offering made available on Supplier's standard commercial, legal, support, ordering, and procurement terms.
 
-This Agreement is effective from the first date you install the Software. You may terminate this Agreement at any time by permanently deleting, destroying and returning, at your own cost, the Software, all backup copies and all related materials provided by OpenFaaS Ltd. OpenFaaS Ltd or its licensors may terminate this Agreement at any time without notice if you fail to comply with any terms or conditions of this Agreement. Once it is terminated you MUST stop using this Software and delete all the Software and associated materials already copied and/or installed on your computer immediately.
+Where Customer has licensed OpenFaaS for Enterprises, or where Customer has required, accepted, or benefited from any custom, negotiated, or non-standard legal, commercial, support, security, onboarding, invoicing, procurement, or other business terms or processes in connection with OpenFaaS Standard or OpenFaaS for Enterprises, Customer may not renew, convert, downgrade, migrate, transition to, or obtain OpenFaaS Standard through Supplier's standard checkout, standard invoice flow, or standard-form terms unless Supplier has first approved that transition in writing.
+
+For the avoidance of doubt, this Section reflects that OpenFaaS Standard is offered only on Supplier's standard-form legal and commercial basis, whereas Enterprise arrangements may include bespoke legal, support, liability, security, procurement, and commercial terms that cannot be unwound, replaced, or transitioned through self-service purchase, standard-form terms, or by implication.
+
+Any such transition requires new legal review, new scoping, and a new written agreement signed by authorised representatives of both parties. Supplier may approve or decline any such request in its discretion and may condition any approved transition on revised pricing, a minimum term, transition fees, professional services fees, and such technical, legal, and commercial conditions as Supplier specifies in the applicable Order Form or migration agreement.
+
+Supplier is under no obligation to preserve any prior discount, concession, service level, indemnity, liability position, support arrangement, or other non-standard term except as expressly set out in that new written agreement.
+
+5. Termination and Continuing Obligations
+
+5.1 This Agreement is effective from the first date you install or access the Licensed Software and continues until terminated as set forth below:
+
+By the Customer: You may terminate this Agreement at any time by permanently deleting the Licensed Software, destroying all copies, and ceasing all use.
+By OpenFaaS Ltd: OpenFaaS Ltd may terminate this Agreement immediately upon written notice if you fail to comply with any terms or conditions herein, including use of the Licensed Software without a valid license key.
+
+Additionally:
+
+This Agreement shall terminate automatically without notice upon expiry of the license key or the failure to renew your subscription for the Licensed Software.
+Upon termination, you must immediately stop using the Licensed Software, delete all copies in your possession or control, and confirm in writing to OpenFaaS Ltd that these actions have been completed.
+Sections 1, 2, 4, 5, 6, 7, 8, and 9 of this Agreement shall survive termination.
+
+5.2 License Renewal and Customer Responsibilities
+
+(a) It is the sole responsibility of the Customer to renew and remit payment for any licenses for the Licensed Software in a timely manner to maintain uninterrupted access and compliance with this Agreement. OpenFaaS Ltd. recommends that Customers request a renewal quote at least thirty (30) days prior to the expiry of the current license to ensure sufficient time for processing.
+(b) OpenFaaS Ltd. shall bear no costs, liabilities, or obligations related to the Customer's failure to renew or remit payment for licenses in a timely manner. The Customer acknowledges and agrees that maintaining a valid and active license is 100% their responsibility, and any interruption or cessation of access to the Licensed Software due to non-renewal or non-payment shall not entitle the Customer to any remedies or compensation from OpenFaaS Ltd.
+
+5.3 No Implied Continuity or Unapproved Transition
+
+Expiry, termination, suspension, or non-renewal of the Licensed Software does not create or imply any right for the Customer to continue operations under OpenFaaS Community Edition or under OpenFaaS Standard, whether by self-service purchase, standard invoice process, or otherwise. Where Section 4.6 applies, any replacement, migration, transition to OpenFaaS Standard, or continued use requires Supplier's prior written approval and a new written agreement signed by authorised representatives of both parties.
 
 6. Customer Data
 
 6.1 Customer Data. In order to use the Products, Customer may need to complete a registration process and provide contact information such as an email address, credentials and other account billing information ("Account Data"). Customer must provide complete and accurate Account Data during the registration process and must keep Customer's Account Data up-to-date. Customer is prohibited from misrepresenting Customer's identity or affiliation with any company or other entity. By providing Account Data, Customer hereby consents that it may receive email or other communications from OpenFaaS Ltd. Such communications may include communications regarding Customer's use of the Products and/or commercial content relating to other OpenFaaS Ltd Products. If you do not wish to receive such communications, a Customer may opt-out by notifying OpenFaaS Ltd at contact@openfaas.com
 
+6.2. Supplier may audit Your use of the Software (e.g., through use of software tools) to assess whether Your use of the Software is in accordance with this Agreement. You agree to cooperate with Supplier's audit and provide reasonable assistance and access to information. Any such audit shall not unreasonably interfere with Your normal business operations.
+
+6.3 In order to audit Your use of the Software, Telemetry Data may be collected and sent via the Internet to servers operated by OpenFaaS Ltd. Telemetry Data includes information about the host servers where the Software is installed such as: number of Nodes, CPUs, RAM, and version numbers. Information about the Software may also be collected such as the total number of Functions, Function invocations, and the number of installations of the Software.
+
+6.4 Your Telemetry Data will be kept private and confidential and will not be shared with any third parties. Telemetry Data will be used to provide You with better support, to improve the Software, and for accurate billing.
+
+6.5 Unless otherwise agreed in writing, sharing of Telemetry Data with OpenFaaS Ltd is a prerequisite for using the Software.
+
 7. Co-Marketing
-At the request of Supplier, Customer agrees to participate in other reasonable marketing activities that promote the benefits of the Services to other potential customers and to use of Customer's name and logo on the Supplier's web site and in Supplier's promotional materials. Customer agrees that Supplier may disclose Customer as a customer of the Products.
+
+7.1 At the request of Supplier, Customer agrees to participate in other reasonable marketing activities that promote the benefits of the Services to other potential customers, including providing testimonials, case studies, and references.
+
+7.2 Customer grants use of the Customer's name and logo on the Supplier's websites and in the Supplier's promotional materials.
+
+7.3 Customer agrees that Supplier may disclose Customer as a customer of the Products.
 
 8. Limitation of Liability.
 
@@ -51,6 +94,14 @@ At the request of Supplier, Customer agrees to participate in other reasonable m
 
 8.3 Limitation of Liability. To the extent permitted by applicable law, the liability of OpenFaaS Ltd and its licensors, personnel, subcontractors and suppliers arising out of, in connection with, or resulting from this Agreement and, without limitation, for any and all causes with respect to the Licensed Program Materials, breach of contract, tort, warranty or otherwise, shall in the aggregate not exceed the license fees paid by Licensee hereunder in the twelve (12) months immediately preceding the event giving rise to the claim.
 
-8.3 Sections 1, 2, 3, 4, 5, 6, 7 and 8 will remain effective after the termination of the Agreement.
+9. Purchase Orders
 
-8.4 If you have any questions about these terms or our Services you may contact us by email at: contact@openfaas.com
+9.1 Any purchase order issued by Customer is for administrative or billing purposes only.
+
+9.2 Any terms or conditions contained in a purchase order, vendor portal, or other Customer-provided document shall have no force or effect, and shall not modify, supersede, or supplement this Agreement or the applicable Order Form.
+
+9.3 In the event of any conflict between documents, the Order Form and this Agreement shall prevail.
+
+9.4 Variation and Waiver. Any waiver, consent, exception, or variation of this Agreement, including any approval under Sections 4.6 or 5.3, is effective only if it is in writing and signed by authorised representatives of both parties. No failure or delay by OpenFaaS Ltd to enforce any provision of this Agreement shall operate as a waiver of that provision or any other provision.
+
+10. If you have any questions about these terms or our Services you may contact us by email at: contact@openfaas.com

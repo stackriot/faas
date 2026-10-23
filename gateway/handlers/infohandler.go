@@ -1,14 +1,15 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) OpenFaaS Author(s). All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package handlers
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
-
-	"io/ioutil"
 	"net/http/httptest"
 
 	providerTypes "github.com/openfaas/faas-provider/types"
@@ -27,7 +28,7 @@ func MakeInfoHandler(h http.Handler) http.HandlerFunc {
 
 		var provider *providerTypes.ProviderInfo
 
-		upstreamBody, _ := ioutil.ReadAll(upstreamCall.Body)
+		upstreamBody, _ := io.ReadAll(upstreamCall.Body)
 		err := json.Unmarshal(upstreamBody, &provider)
 		if err != nil {
 			log.Printf("Error unmarshalling provider json from body %s. Error %s\n", upstreamBody, err.Error())

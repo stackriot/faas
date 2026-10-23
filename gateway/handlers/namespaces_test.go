@@ -1,12 +1,18 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) Alex Ellis 2017. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package handlers
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/openfaas/faas/gateway/pkg/middleware"
+)
 
 func Test_getNamespace_Default(t *testing.T) {
-	root, ns := getNamespace("openfaas-fn", "figlet.openfaas-fn")
+	root, ns := middleware.GetNamespace("openfaas-fn", "figlet.openfaas-fn")
 	wantRoot := "figlet"
 	wantNs := "openfaas-fn"
 
@@ -19,7 +25,7 @@ func Test_getNamespace_Default(t *testing.T) {
 }
 
 func Test_getNamespace_Override(t *testing.T) {
-	root, ns := getNamespace("fn", "figlet.fn")
+	root, ns := middleware.GetNamespace("fn", "figlet.fn")
 	wantRoot := "figlet"
 	wantNs := "fn"
 
@@ -32,7 +38,7 @@ func Test_getNamespace_Override(t *testing.T) {
 }
 
 func Test_getNamespace_Empty(t *testing.T) {
-	root, ns := getNamespace("", "figlet")
+	root, ns := middleware.GetNamespace("", "figlet")
 	wantRoot := "figlet"
 	wantNs := ""
 

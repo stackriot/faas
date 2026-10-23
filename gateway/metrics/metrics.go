@@ -1,5 +1,7 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) Alex Ellis 2017. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package metrics
 
@@ -16,8 +18,8 @@ type MetricOptions struct {
 	GatewayFunctionInvocation        *prometheus.CounterVec
 	GatewayFunctionsHistogram        *prometheus.HistogramVec
 	GatewayFunctionInvocationStarted *prometheus.CounterVec
-	ServiceReplicasGauge             *prometheus.GaugeVec
-	ServiceMetrics                   *ServiceMetricOptions
+
+	ServiceReplicasGauge *prometheus.GaugeVec
 }
 
 // ServiceMetricOptions provides RED metrics
@@ -46,7 +48,7 @@ func BuildMetricsOptions() MetricOptions {
 	gatewayFunctionsHistogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "gateway_functions_seconds",
 		Help: "Function time taken",
-	}, []string{"function_name"})
+	}, []string{"function_name", "code"})
 
 	gatewayFunctionInvocation := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
@@ -62,27 +64,9 @@ func BuildMetricsOptions() MetricOptions {
 		prometheus.GaugeOpts{
 			Namespace: "gateway",
 			Name:      "service_count",
-			Help:      "Service replicas",
+			Help:      "Current count of replicas for function",
 		},
 		[]string{"function_name"},
-	)
-
-	// For automatic monitoring and alerting (RED method)
-	histogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Subsystem: "http",
-		Name:      "request_duration_seconds",
-		Help:      "Seconds spent serving HTTP requests.",
-		Buckets:   prometheus.DefBuckets,
-	}, []string{"method", "path", "status"})
-
-	// Can be used Kubernetes HPA v2
-	counter := prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Subsystem: "http",
-			Name:      "requests_total",
-			Help:      "The total number of HTTP requests.",
-		},
-		[]string{"method", "path", "status"},
 	)
 
 	gatewayFunctionInvocationStarted := prometheus.NewCounterVec(
@@ -95,16 +79,10 @@ func BuildMetricsOptions() MetricOptions {
 		[]string{"function_name"},
 	)
 
-	serviceMetricOptions := &ServiceMetricOptions{
-		Counter:   counter,
-		Histogram: histogram,
-	}
-
 	metricsOptions := MetricOptions{
 		GatewayFunctionsHistogram:        gatewayFunctionsHistogram,
 		GatewayFunctionInvocation:        gatewayFunctionInvocation,
 		ServiceReplicasGauge:             serviceReplicas,
-		ServiceMetrics:                   serviceMetricOptions,
 		GatewayFunctionInvocationStarted: gatewayFunctionInvocationStarted,
 	}
 

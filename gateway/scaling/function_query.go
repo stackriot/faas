@@ -1,14 +1,22 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) OpenFaaS Author(s). All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package scaling
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+
+	"golang.org/x/sync/singleflight"
+)
 
 type CachedFunctionQuery struct {
 	cache            FunctionCacher
 	serviceQuery     ServiceQuery
 	emptyAnnotations map[string]string
+	singleFlight     *singleflight.Group
 }
 
 func NewCachedFunctionQuery(cache FunctionCacher, serviceQuery ServiceQuery) FunctionQuery {
@@ -16,6 +24,7 @@ func NewCachedFunctionQuery(cache FunctionCacher, serviceQuery ServiceQuery) Fun
 		cache:            cache,
 		serviceQuery:     serviceQuery,
 		emptyAnnotations: map[string]string{},
+		singleFlight:     &singleflight.Group{},
 	}
 }
 
@@ -35,13 +44,21 @@ func (c *CachedFunctionQuery) Get(fn string, ns string) (ServiceQueryResponse, e
 
 	query, hit := c.cache.Get(fn, ns)
 	if !hit {
+		key := fmt.Sprintf("GetReplicas-%s.%s", fn, ns)
+		queryResponse, err, _ := c.singleFlight.Do(key, func() (interface{}, error) {
+			log.Printf("Cache miss - run GetReplicas")
+			// If there is a cache miss, then fetch the value from the provider API
+			return c.serviceQuery.GetReplicas(fn, ns)
+		})
 
-		// If there is a cache miss, then fetch the value from the provider API
-		queryResponse, err := c.serviceQuery.GetReplicas(fn, ns)
 		if err != nil {
 			return ServiceQueryResponse{}, err
 		}
-		c.cache.Set(fn, ns, queryResponse)
+
+		if queryResponse != nil {
+			c.cache.Set(fn, ns, queryResponse.(ServiceQueryResponse))
+		}
+
 	} else {
 		return query, nil
 	}

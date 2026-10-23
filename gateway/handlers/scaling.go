@@ -1,5 +1,7 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) OpenFaaS Author(s). All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package handlers
 
@@ -7,17 +9,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
+	"github.com/openfaas/faas/gateway/pkg/middleware"
 	"github.com/openfaas/faas/gateway/scaling"
 )
-
-func getNamespace(defaultNamespace, fullName string) (string, string) {
-	if index := strings.LastIndex(fullName, "."); index > -1 {
-		return fullName[:index], fullName[index+1:]
-	}
-	return fullName, defaultNamespace
-}
 
 // MakeScalingHandler creates handler which can scale a function from
 // zero to N replica(s). After scaling the next http.HandlerFunc will
@@ -28,7 +23,7 @@ func MakeScalingHandler(next http.HandlerFunc, scaler scaling.FunctionScaler, co
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		functionName, namespace := getNamespace(defaultNamespace, getServiceName(r.URL.String()))
+		functionName, namespace := middleware.GetNamespace(defaultNamespace, middleware.GetServiceName(r.URL.String()))
 
 		res := scaler.Scale(functionName, namespace)
 
@@ -55,6 +50,7 @@ func MakeScalingHandler(next http.HandlerFunc, scaler scaling.FunctionScaler, co
 			return
 		}
 
-		log.Printf("[Scale] function=%s.%s 0=>N timed-out after %fs\n", functionName, namespace, res.Duration.Seconds())
+		log.Printf("[Scale] function=%s.%s 0=>N timed-out after %.4fs\n",
+			functionName, namespace, res.Duration.Seconds())
 	}
 }

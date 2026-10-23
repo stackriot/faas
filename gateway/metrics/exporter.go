@@ -1,13 +1,15 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) Alex Ellis 2017
 // Copyright (c) 2018 OpenFaaS Author(s)
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package metrics
 
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -46,9 +48,6 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	e.metricOptions.GatewayFunctionsHistogram.Describe(ch)
 	e.metricOptions.ServiceReplicasGauge.Describe(ch)
 	e.metricOptions.GatewayFunctionInvocationStarted.Describe(ch)
-
-	e.metricOptions.ServiceMetrics.Counter.Describe(ch)
-	e.metricOptions.ServiceMetrics.Histogram.Describe(ch)
 }
 
 // Collect collects data to be consumed by prometheus
@@ -59,6 +58,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	e.metricOptions.GatewayFunctionInvocationStarted.Collect(ch)
 
 	e.metricOptions.ServiceReplicasGauge.Reset()
+
 	for _, service := range e.services {
 		var serviceName string
 		if len(service.Namespace) > 0 {
@@ -66,15 +66,14 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		} else {
 			serviceName = service.Name
 		}
+
+		// Set current replica count
 		e.metricOptions.ServiceReplicasGauge.
 			WithLabelValues(serviceName).
 			Set(float64(service.Replicas))
 	}
 
 	e.metricOptions.ServiceReplicasGauge.Collect(ch)
-
-	e.metricOptions.ServiceMetrics.Counter.Collect(ch)
-	e.metricOptions.ServiceMetrics.Histogram.Collect(ch)
 }
 
 // StartServiceWatcher starts a ticker and collects service replica counts to expose to prometheus
@@ -89,7 +88,7 @@ func (e *Exporter) StartServiceWatcher(endpointURL url.URL, metricsOptions Metri
 
 				namespaces, err := e.getNamespaces(endpointURL)
 				if err != nil {
-					log.Println(err)
+					log.Printf("Error listing namespaces: %s", err)
 				}
 
 				services := []types.FunctionStatus{}
@@ -98,7 +97,7 @@ func (e *Exporter) StartServiceWatcher(endpointURL url.URL, metricsOptions Metri
 				if len(namespaces) == 0 {
 					services, err = e.getFunctions(endpointURL, e.FunctionNamespace)
 					if err != nil {
-						log.Println(err)
+						log.Printf("Error getting functions from: %s, error: %s", e.FunctionNamespace, err)
 						continue
 					}
 					e.services = services
@@ -106,7 +105,7 @@ func (e *Exporter) StartServiceWatcher(endpointURL url.URL, metricsOptions Metri
 					for _, namespace := range namespaces {
 						nsServices, err := e.getFunctions(endpointURL, namespace)
 						if err != nil {
-							log.Println(err)
+							log.Printf("Error getting functions from: %s, error: %s", e.FunctionNamespace, err)
 							continue
 						}
 						services = append(services, nsServices...)
@@ -115,7 +114,6 @@ func (e *Exporter) StartServiceWatcher(endpointURL url.URL, metricsOptions Metri
 
 				e.services = services
 
-				break
 			case <-quit:
 				return
 			}
@@ -141,7 +139,7 @@ func (e *Exporter) getHTTPClient(timeout time.Duration) http.Client {
 }
 
 func (e *Exporter) getFunctions(endpointURL url.URL, namespace string) ([]types.FunctionStatus, error) {
-	timeout := 3 * time.Second
+	timeout := 5 * time.Second
 	proxyClient := e.getHTTPClient(timeout)
 
 	endpointURL.Path = path.Join(endpointURL.Path, "/system/functions")
@@ -162,15 +160,26 @@ func (e *Exporter) getFunctions(endpointURL url.URL, namespace string) ([]types.
 		return services, err
 	}
 
-	bytesOut, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		return services, readErr
+	var body []byte
+	if res.Body != nil {
+		defer res.Body.Close()
+
+		if b, err := io.ReadAll(res.Body); err != nil {
+			return services, err
+		} else {
+			body = b
+		}
 	}
 
-	unmarshalErr := json.Unmarshal(bytesOut, &services)
-	if unmarshalErr != nil {
-		return services, unmarshalErr
+	if len(body) == 0 {
+		return services, fmt.Errorf("no response body from /system/functions")
 	}
+
+	if err := json.Unmarshal(body, &services); err != nil {
+		return services, fmt.Errorf("error unmarshalling response: %s, error: %s",
+			string(body), err)
+	}
+
 	return services, nil
 }
 
@@ -183,7 +192,7 @@ func (e *Exporter) getNamespaces(endpointURL url.URL) ([]string, error) {
 		get.SetBasicAuth(e.credentials.User, e.credentials.Password)
 	}
 
-	timeout := 3 * time.Second
+	timeout := 5 * time.Second
 	proxyClient := e.getHTTPClient(timeout)
 
 	res, err := proxyClient.Do(get)
@@ -195,14 +204,24 @@ func (e *Exporter) getNamespaces(endpointURL url.URL) ([]string, error) {
 		return namespaces, nil
 	}
 
-	bytesOut, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		return namespaces, readErr
+	var body []byte
+	if res.Body != nil {
+		defer res.Body.Close()
+
+		if b, err := io.ReadAll(res.Body); err != nil {
+			return namespaces, err
+		} else {
+			body = b
+		}
 	}
 
-	unmarshalErr := json.Unmarshal(bytesOut, &namespaces)
-	if unmarshalErr != nil {
-		return namespaces, unmarshalErr
+	if len(body) == 0 {
+		return namespaces, fmt.Errorf("no response body from /system/namespaces")
 	}
+
+	if err := json.Unmarshal(body, &namespaces); err != nil {
+		return namespaces, fmt.Errorf("error unmarshalling response: %s, error: %s", string(body), err)
+	}
+
 	return namespaces, nil
 }

@@ -1,5 +1,7 @@
+// License: OpenFaaS Community Edition (CE) EULA
+// Copyright (c) 2017,2019-2024 OpenFaaS Author(s)
+
 // Copyright (c) Alex Ellis 2017. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package types
 
@@ -35,16 +37,6 @@ func TestRead_UseExternalProvider_Defaults(t *testing.T) {
 
 	if config.UseExternalProvider() != false {
 		t.Log("Default for UseExternalProvider should be false")
-		t.Fail()
-	}
-
-	if config.DirectFunctions != false {
-		t.Log("Default for DirectFunctions should be false")
-		t.Fail()
-	}
-
-	if len(config.DirectFunctionsSuffix) > 0 {
-		t.Log("Default for DirectFunctionsSuffix should be empty")
 		t.Fail()
 	}
 
@@ -89,54 +81,6 @@ func TestRead_NamespaceOverrideAgressWithFunctionSuffix_Valid(t *testing.T) {
 	}
 }
 
-func TestRead_NamespaceOverrideAgressWithFunctionSuffix_Invalid(t *testing.T) {
-
-	defaults := NewEnvBucket()
-	readConfig := ReadConfig{}
-
-	defaults.Setenv("direct_functions", "true")
-	wantSuffix := "openfaas-fn.cluster.local.svc."
-
-	defaults.Setenv("direct_functions_suffix", wantSuffix)
-	defaults.Setenv("function_namespace", "fn")
-
-	_, err := readConfig.Read(defaults)
-
-	if err == nil {
-		t.Logf("Expected an error because function_namespace should be a sub-string of direct_functions_suffix")
-		t.Fail()
-		return
-	}
-
-	want := "function_namespace must be a sub-string of direct_functions_suffix"
-
-	if want != err.Error() {
-		t.Logf("Error want: %s, got: %s", want, err.Error())
-		t.Fail()
-	}
-
-}
-
-func TestRead_DirectFunctionsOverride(t *testing.T) {
-	defaults := NewEnvBucket()
-	readConfig := ReadConfig{}
-	defaults.Setenv("direct_functions", "true")
-	wantSuffix := "openfaas-fn.cluster.local.svc."
-	defaults.Setenv("direct_functions_suffix", wantSuffix)
-
-	config, _ := readConfig.Read(defaults)
-
-	if config.DirectFunctions != true {
-		t.Logf("DirectFunctions should be true, got: %v", config.DirectFunctions)
-		t.Fail()
-	}
-
-	if config.DirectFunctionsSuffix != wantSuffix {
-		t.Logf("DirectFunctionsSuffix want: %s, got: %s", wantSuffix, config.DirectFunctionsSuffix)
-		t.Fail()
-	}
-}
-
 func TestRead_ScaleZeroDefaultAndOverride(t *testing.T) {
 	defaults := NewEnvBucket()
 	readConfig := ReadConfig{}
@@ -154,7 +98,7 @@ func TestRead_ScaleZeroDefaultAndOverride(t *testing.T) {
 	want = true
 
 	if config.ScaleFromZero != want {
-		t.Logf("ScaleFromZero was overriden - should be %v, got: %v", want, config.ScaleFromZero)
+		t.Logf("ScaleFromZero was overridden - should be %v, got: %v", want, config.ScaleFromZero)
 		t.Fail()
 	}
 
@@ -166,13 +110,16 @@ func TestRead_EmptyTimeoutConfig(t *testing.T) {
 
 	config, _ := readConfig.Read(defaults)
 
-	if (config.ReadTimeout) != time.Duration(8)*time.Second {
-		t.Log("ReadTimeout incorrect")
-		t.Fail()
+	want := time.Second * 60
+	got := config.ReadTimeout
+	if got != want {
+		t.Fatalf("config.ReadTimeout want: %s, but got: %s", want, got)
 	}
-	if (config.WriteTimeout) != time.Duration(8)*time.Second {
-		t.Log("WriteTimeout incorrect")
-		t.Fail()
+
+	want = time.Second * 60
+	got = config.WriteTimeout
+	if got != want {
+		t.Fatalf("config.WriteTimeout want: %s, but got: %s", want, got)
 	}
 }
 
